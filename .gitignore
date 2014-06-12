@@ -3,6 +3,7 @@
 *.ko
 *.obj
 *.elf
+build/
 
 # Libraries
 *.lib
@@ -21,3 +22,7 @@
 *.i*86
 *.x86_64
 *.hex
+
+#Sublime Files
+*.sublime*
+
