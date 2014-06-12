@@ -3,8 +3,6 @@
 
 #include <stdint.h>
 
-#define memTest(x) { if (x<0) {return -1;}}
-
 typedef struct{
     uint8_t *bios;
     uint32_t biosSize;

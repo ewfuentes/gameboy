@@ -41,6 +41,7 @@ typedef struct{
     };
     uint16_t sp;
     uint16_t pc;
+    uint32_t dt;
 } z80_t;
 
 //Takes in an instance of the z80 struct and zeros out all of the 

@@ -5,6 +5,7 @@ LD = clang
 
 SRC = main.c \
 	cpu/z80.c \
+	cpu/z80_instr.c \
 	cpu/mem.c \
 	interface/bios.c
 
