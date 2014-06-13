@@ -4,9 +4,21 @@
 #include "cpu/z80.h"
 
 typedef enum {
-    z80_fail = -1,
+    z80_bad_param = -2,
+    z80_fail,
     z80_ok
 } z80_status;
+
+typedef enum {
+    z80_dstIsAddr = 1 << 0,
+    z80_srcIsAddr = 1 << 1,
+    z80_dstInc = 1 << 2,
+    z80_srcInc = 1 << 3,
+    z80_dstDec = 1 << 4,
+    z80_srcDec = 1 << 5,
+    z80_srcPage0 = 1 << 6,
+    z80_dstPage0 = 1 << 7
+} z80_flags;
 
 typedef enum {
     zNOP,               //0x00
@@ -110,6 +122,7 @@ typedef enum {
     zLD_h_d,
     zLD_h_e,
     zLD_h_h,
+    zLD_h_l,
     zLD_h_HL,
     zLD_h_a,
     zLD_l_b,
@@ -521,5 +534,13 @@ z80_status z80_nop(z80_t *z80, mem_t *mem);
 //Takes care of instructions:
 // 0x01, 0x11, 0x21, 0x31
 z80_status z80_loadShort(z80_t *z80, mem_t *mem, uint16_t *reg);
+
+z80_status z80_mov(z80_t *z80, mem_t *mem, uint8_t *dst, uint8_t src);
+
+z80_status z80_movGen(z80_t *z80, mem_t *mem, void *dst, void *src,
+                      z80_flags flags);
+
+z80_status z80_incShort(z80_t *z80, mem_t *mem, uint16_t *reg);
+z80_status z80_decShort(z80_t *z80, mem_t *mem, uint16_t *reg);
 
 #endif

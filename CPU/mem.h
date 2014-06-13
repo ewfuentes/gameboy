@@ -3,6 +3,8 @@
 
 #include <stdint.h>
 
+#define VALID_MEM_OP(x) { if (x<0) {return z80_fail;}}
+
 typedef struct{
     uint8_t *bios;
     uint32_t biosSize;
