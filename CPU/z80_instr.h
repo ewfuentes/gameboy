@@ -543,4 +543,7 @@ z80_status z80_movGen(z80_t *z80, mem_t *mem, void *dst, void *src,
 z80_status z80_incShort(z80_t *z80, mem_t *mem, uint16_t *reg);
 z80_status z80_decShort(z80_t *z80, mem_t *mem, uint16_t *reg);
 
+z80_status z80_incByte(z80_t *z80, mem_t *mem, void *reg, 
+                       uint32_t flag);
+
 #endif

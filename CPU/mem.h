@@ -22,6 +22,7 @@ int8_t mem_init(mem_t *mem);
 //Returns <0 if unsuccessful
 int8_t mem_readByte(mem_t *mem, uint16_t location, uint8_t *data);
 int8_t mem_readShort(mem_t *mem, uint16_t location, uint16_t *data);
+int8_t mem_getPointer(mem_t *mem, uint16_t location, uint8_t **ptr);
 
 int8_t mem_writeByte(mem_t *mem, uint16_t location, uint8_t data);
 int8_t mem_writeShort(mem_t *mem, uint16_t location, uint16_t data);
