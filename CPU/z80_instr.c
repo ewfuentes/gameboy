@@ -109,7 +109,9 @@ z80_status z80_incByte(z80_t *z80, mem_t *mem, void *reg,
   }
 
   uint8_t *data = (uint8_t *)reg;
+  z80->dt = 4;
   if (flag & (z80_srcIsAddr | z80_dstIsAddr)) {
+    z80->dt = 12;
     VALID_MEM_OP(mem_getPointer(mem, *((uint16_t *)reg), &data));
   }
 
@@ -134,8 +136,10 @@ z80_status z80_decByte(z80_t *z80, mem_t *mem, void *reg,
   }
 
   uint8_t *data = (uint8_t *)reg;
+  z80->dt = 4;
   if (flag & (z80_srcIsAddr | z80_dstIsAddr)) {
     VALID_MEM_OP(mem_getPointer(mem, *((uint16_t *)reg), &data));
+    z80->dt = 12;
   }
 
   (*data)--;
