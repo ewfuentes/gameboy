@@ -101,6 +101,10 @@ int8_t z80_step(z80_t *z80, mem_t *mem) {
                  z80_srcIsAddr | z80_srcInc);
       break;
 
+    case zADD_hl_bc: // 0x09
+      z80_addShort(state, &(z80->hl), z80->bc);
+      break;
+
     case zLD_a_BC: // 0x0A
       z80_movGen(state, &(z80->a), &(z80->bc), z80_srcIsAddr);
       break;
@@ -147,6 +151,14 @@ int8_t z80_step(z80_t *z80, mem_t *mem) {
                  z80_srcIsAddr | z80_srcInc);
       break;
       
+    case zJR_r8: // 0x18
+      z80_jp(state, 1, 1);
+      break;
+
+    case zADD_hl_de: // 0x19
+      z80_addShort(state, &(z80->hl), z80->de);
+      break;
+
     case zLD_a_DE: // 0x1A
       z80_movGen(state, &(z80->a), &(z80->de), z80_srcIsAddr);
       break;
@@ -166,6 +178,10 @@ int8_t z80_step(z80_t *z80, mem_t *mem) {
     case zLD_e_d8: // 0x1E
       z80_movGen(state, &(z80->e), &(z80->pc), 
                  z80_srcIsAddr | z80_srcInc);
+      break;
+
+    case zJRNZ_r8: // 0x20
+      z80_jp(state, 1, (z80->f & ZERO_FLAG) == 0);
       break;
 
     case zLD_hl_d16: // 0x21
@@ -194,6 +210,14 @@ int8_t z80_step(z80_t *z80, mem_t *mem) {
                  z80_srcIsAddr | z80_srcInc);
       break;
 
+    case zJRZ_r8: // 0x28
+      z80_jp(state, 1, z80->f & ZERO_FLAG);
+      break;
+
+    case zADD_hl_hl: // 0x29
+      z80_addShort(state, &(z80->hl), z80->hl);
+      break;
+
     case zLD_a_HLI: // 0x2A
       z80_movGen(state, &(z80->a), &(z80->hl), 
                  z80_srcIsAddr | z80_srcInc);
@@ -214,6 +238,10 @@ int8_t z80_step(z80_t *z80, mem_t *mem) {
     case zLD_l_d8: // 0x2E
       z80_movGen(state, &(z80->l), &(z80->pc), 
                  z80_srcIsAddr | z80_srcInc);
+      break;
+
+    case zJRNC_r8: // 0x30
+      z80_jp(state, 1, (z80->f & CARRY_FLAG) == 0);
       break;
 
     case zLD_sp_d16: // 0x31
@@ -240,6 +268,14 @@ int8_t z80_step(z80_t *z80, mem_t *mem) {
     case zLD_HL_d8: // 0x36
       z80_movGen(state, &(z80->hl), &(z80->pc),
                  z80_srcIsAddr | z80_srcInc | z80_dstIsAddr);
+      break;
+
+    case zJRC_r8: // 0x38
+      z80_jp(state, 1, z80->f & CARRY_FLAG);
+      break;
+
+    case zADD_hl_sp: // 0x39
+      z80_addShort(state, &(z80->hl), z80->sp);
       break;
 
     case zLD_a_HLD: // 0x3A

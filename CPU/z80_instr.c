@@ -157,4 +157,76 @@ z80_status z80_decByte(z80_t *z80, mem_t *mem, void *reg,
   return z80_ok;
 }
 
+//This fuction will add the lower nibbles together and set the
+//appropriate flags
+z80_status addNibble(uint8_t a, uint8_t b, uint8_t *flags, 
+                     uint8_t *result) {
+  if (flags == NULL)  {
+    return z80_bad_param;
+  }
 
+  a &= 0x0F;
+  b &= 0x0F;
+  
+  *result = a + b;
+  if (*flags & CARRY_FLAG) {
+    (*result)++;
+    *flags = HALF_FLAG;
+  }
+  if (*result > 0x0F) {
+    *flags |= CARRY_FLAG;
+  }
+  *result &= 0x0F;
+  return z80_ok;
+}
+
+z80_status z80_addShort(z80_t *z80, mem_t *mem, uint16_t *dst,
+                        uint16_t src) {
+  if (z80 == NULL || mem == NULL || dst == NULL) {
+    return z80_bad_param;
+  }
+
+  uint8_t result = 0;
+  uint8_t flag = 0;
+  addNibble(*dst & 0x0F, src & 0x0F, &flag, &result);
+  *dst = (0xFFF0 & *dst) | (src & 0x0F);
+  addNibble((*dst>>4) & 0x0F, (src >> 4) & 0x0F, &flag, &result);
+  *dst = (*dst & 0xFF0F) | ((result << 4) & 0x00F0);
+  addNibble((*dst>>8) & 0x0F, (src >> 8) & 0x0F, &flag, &result);
+  *dst = (*dst & 0xF0FF) | ((result << 8) & 0x0F00);
+  addNibble((*dst>>12) & 0x0F, (src >> 12) & 0x0F, &flag, &result);
+  *dst = (*dst & 0x0FFF) | ((result << 12) & 0xF000);
+
+  z80->f = (z80->f & ZERO_FLAG) | (flag & (HALF_FLAG | CARRY_FLAG));
+  z80->dt = 8;
+  return z80_ok;
+}
+
+z80_status z80_jp(z80_t *z80, mem_t *mem, uint8_t numAddrBytes, 
+       uint8_t condition) {
+  if (z80 == NULL || mem == NULL || numAddrBytes > 2) {
+    return z80_bad_param;
+  }
+
+  if (numAddrBytes == 1) {
+    int8_t addr = 0;
+    VALID_MEM_OP(mem_readByte(mem, z80->pc++, (uint8_t *)&addr));
+    if (condition) {
+      z80->dt = 12;
+      z80->pc += addr;
+    }else {
+      z80->dt = 8;
+    }
+  } else {
+    int16_t addr = 0;
+    VALID_MEM_OP(mem_readShort(mem, z80->pc, (uint16_t *)&addr));
+    z80->pc += 2;
+    if (condition) {
+      z80->dt = 16;
+      z80->pc = addr;
+    } else {
+      z80->dt = 12;
+    }
+  }
+  return z80_ok;
+}
