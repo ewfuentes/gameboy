@@ -90,6 +90,7 @@ z80_status z80_incShort(z80_t *z80, mem_t *mem, uint16_t *reg) {
   }
   (*reg)++;
   z80->dt = 8;
+  return z80_ok;
 }
 
 z80_status z80_decShort(z80_t *z80, mem_t *mem, uint16_t *reg) {
@@ -98,6 +99,7 @@ z80_status z80_decShort(z80_t *z80, mem_t *mem, uint16_t *reg) {
   }
   (*reg)--;
   z80->dt = 8;
+  return z80_ok;
 }
 
 z80_status z80_incByte(z80_t *z80, mem_t *mem, void *reg, 
@@ -107,20 +109,48 @@ z80_status z80_incByte(z80_t *z80, mem_t *mem, void *reg,
   }
 
   uint8_t *data = (uint8_t *)reg;
-  if (flags & (z80_srcIsAddr | z80_dstIsAddr)) {
-    VALID_MEM_OP(mem_getPointer(mem, *((uint16_t *)reg), &data);
+  if (flag & (z80_srcIsAddr | z80_dstIsAddr)) {
+    VALID_MEM_OP(mem_getPointer(mem, *((uint16_t *)reg), &data));
   }
 
   (*data)++;
 
   z80->f = z80->f & CARRY_FLAG;
-  if (*data == 0) {
+  if (*data == 0x00) {
     z80->f |= ZERO_FLAG;
   }
 
-  if (*data & 0x0F > 0x09) {
+  if ((*data & 0x0F) == 0x00) {
     z80->f |= HALF_FLAG;
   }
 
   return z80_ok;
 }
+
+z80_status z80_decByte(z80_t *z80, mem_t *mem, void *reg, 
+                       uint32_t flag) {
+  if (z80 == NULL || mem == NULL || reg == NULL) {
+    return z80_bad_param;
+  }
+
+  uint8_t *data = (uint8_t *)reg;
+  if (flag & (z80_srcIsAddr | z80_dstIsAddr)) {
+    VALID_MEM_OP(mem_getPointer(mem, *((uint16_t *)reg), &data));
+  }
+
+  (*data)--;
+
+  z80->f = z80->f & CARRY_FLAG;
+  z80->f |= z80->f & SUB_FLAG;
+  if (*data == 0) {
+    z80->f |= ZERO_FLAG;
+  }
+
+  if ((*data & 0x0F) == 0x0F) {
+    z80->f |= HALF_FLAG;
+  }
+
+  return z80_ok;
+}
+
+

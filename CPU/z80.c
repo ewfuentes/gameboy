@@ -92,12 +92,34 @@ int8_t z80_step(z80_t *z80, mem_t *mem) {
       z80_incByte(state, &(z80->b), 0);
       break;
 
+    case zDEC_b: // 0x05
+      z80_decByte(state, &(z80->c), 0);
+      break;
+
+    case zLD_b_d8: // 0x06
+      z80_movGen(state, &(z80->b), &(z80->pc), 
+                 z80_srcIsAddr | z80_srcInc);
+      break;
+
+    case zLD_a_BC: // 0x0A
+      z80_movGen(state, &(z80->a), &(z80->bc), z80_srcIsAddr);
+      break;
+
     case zDEC_bc: // 0x0B
       z80_decShort(state, &(z80->bc));
       break;
 
     case zINC_c: // 0x0C
       z80_incByte(state, &(z80->c), 0);
+      break;
+
+    case zDEC_c: // 0x0D
+      z80_decByte(state, &(z80->c), 0);
+      break;
+
+    case zLD_c_d8: // 0x0E
+      z80_movGen(state, &(z80->c), &(z80->pc), 
+                 z80_srcIsAddr | z80_srcInc);
       break;
 
     case zLD_de_d16: // 0x11
@@ -112,16 +134,38 @@ int8_t z80_step(z80_t *z80, mem_t *mem) {
       z80_incShort(state, &(z80->de));
       break;
 
-    case zINC_b: // 0x14
+    case zINC_d: // 0x14
       z80_incByte(state, &(z80->d), 0);
       break;
+
+    case zDEC_d: // 0x15
+      z80_decByte(state, &(z80->d), 0);
+      break;
+
+    case zLD_d_d8: // 0x16
+      z80_movGen(state, &(z80->d), &(z80->pc), 
+                 z80_srcIsAddr | z80_srcInc);
+      break;
       
+    case zLD_a_DE: // 0x1A
+      z80_movGen(state, &(z80->a), &(z80->de), z80_srcIsAddr);
+      break;
+
     case zDEC_de: // 0x1B
       z80_decShort(state, &(z80->de));
       break;
 
     case zINC_e: // 0x1C
       z80_incByte(state, &(z80->e), 0);
+      break;
+
+    case zDEC_e: // 0x1D
+      z80_decByte(state, &(z80->e), 0);
+      break;
+
+    case zLD_e_d8: // 0x1E
+      z80_movGen(state, &(z80->e), &(z80->pc), 
+                 z80_srcIsAddr | z80_srcInc);
       break;
 
     case zLD_hl_d16: // 0x21
@@ -141,12 +185,35 @@ int8_t z80_step(z80_t *z80, mem_t *mem) {
       z80_incByte(state, &(z80->h), 0);
       break;
 
+    case zDEC_h: // 0x25
+      z80_decByte(state, &(z80->h), 0);
+      break;
+
+    case zLD_h_d8: // 0x26
+      z80_movGen(state, &(z80->h), &(z80->pc),
+                 z80_srcIsAddr | z80_srcInc);
+      break;
+
+    case zLD_a_HLI: // 0x2A
+      z80_movGen(state, &(z80->a), &(z80->hl), 
+                 z80_srcIsAddr | z80_srcInc);
+      break;
+
     case zDEC_hl: // 0x2B
       z80_decShort(state, &(z80->hl));
       break;
 
     case zINC_l: // 0x2C
       z80_incByte(state, &(z80->l), 0);
+      break;
+
+    case zDEC_l: // 0x2D
+      z80_decByte(state, &(z80->l), 0);
+      break;
+
+    case zLD_l_d8: // 0x2E
+      z80_movGen(state, &(z80->l), &(z80->pc), 
+                 z80_srcIsAddr | z80_srcInc);
       break;
 
     case zLD_sp_d16: // 0x31
@@ -162,16 +229,39 @@ int8_t z80_step(z80_t *z80, mem_t *mem) {
       z80_incShort(state, &(z80->sp));
       break;
 
-    case zINC_b: // 0x34
+    case zINC_HL: // 0x34
       z80_incByte(state, &(z80->hl), z80_dstIsAddr);
       break;
 
+    case zDEC_HL: // 0x35
+      z80_decByte(state, &(z80->hl), z80_dstIsAddr);
+      break;
+
+    case zLD_HL_d8: // 0x36
+      z80_movGen(state, &(z80->hl), &(z80->pc),
+                 z80_srcIsAddr | z80_srcInc | z80_dstIsAddr);
+      break;
+
+    case zLD_a_HLD: // 0x3A
+      z80_movGen(state, &(z80->a), &(z80->hl), 
+                 z80_srcIsAddr | z80_srcDec);
+      break;
+
     case zDEC_sp: // 0x3B
-      z80_decShort(statem &(z80->sp));
+      z80_decShort(state, &(z80->sp));
       break;
 
     case zINC_a: // 0x3C
       z80_incByte(state, &(z80->a), 0);
+      break;
+
+    case zDEC_a: // 0x3D
+      z80_decByte(state, &(z80->a), 0);
+      break;
+
+    case zLD_a_d8: // 0x3E
+      z80_movGen(state, &(z80->a), &(z80->pc), 
+                 z80_srcIsAddr | z80_srcInc);
       break;
 
     case zLD_b_b:   // 0x40
