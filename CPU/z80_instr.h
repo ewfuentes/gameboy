@@ -17,7 +17,8 @@ typedef enum {
     z80_dstDec = 1 << 4,
     z80_srcDec = 1 << 5,
     z80_srcPage0 = 1 << 6,
-    z80_dstPage0 = 1 << 7
+    z80_dstPage0 = 1 << 7,
+    z80_withCarry = 1 << 8
 } z80_flags;
 
 typedef enum {
@@ -554,5 +555,8 @@ z80_status z80_addShort(z80_t *z80, mem_t *mem, uint16_t *dst,
 
 z80_status z80_jp(z80_t *z80, mem_t *mem, uint8_t numAddrBytes, 
        uint8_t condition);
+
+z80_status z80_addByte(z80_t *z80, mem_t *mem, uint8_t *dst, 
+                       uint8_t *src, uint32_t flag);
 
 #endif

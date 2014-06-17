@@ -230,3 +230,88 @@ z80_status z80_jp(z80_t *z80, mem_t *mem, uint8_t numAddrBytes,
   }
   return z80_ok;
 }
+
+z80_status z80_addByte(z80_t *z80, mem_t *mem, uint8_t *dst, 
+                       uint8_t *src, uint32_t flag) {
+  if (z80 == NULL || mem == NULL || dst == NULL) {
+    return z80_bad_param;
+  }
+
+  uint8_t srcData = 0;
+  if (flag & z80_srcIsAddr) {
+    z80->dt = 8;
+    VALID_MEM_OP(mem_readByte(mem, *((uint16_t *)src), &srcData));
+  } else {
+    z80->dt = 4;
+    srcData = *src;
+  }
+
+  if ((flag & z80_withCarry) && (z80->f & CARRY_FLAG)) {
+    srcData++;
+  }
+
+  uint8_t opFlags = 0;
+  uint8_t result = 0;
+  addNibble(*dst, srcData, &opFlags, &result);
+  *dst = (*dst & 0xF0) | (result & 0x0F);
+  addNibble(*dst >> 4, srcData >> 4, &opFlags, &result);
+  *dst = (*dst & 0x0F) | ((result << 4) & 0xF0);
+
+  z80->f = opFlags;
+  
+
+  return z80_ok;
+}
+
+z80_status subNibble(uint8_t a, uint8_t b, uint8_t *flags, 
+                     uint8_t *result) {
+  if (flags == NULL || result == NULL)  {
+    return z80_bad_param;
+  }
+
+  a &= 0x0F;
+  b &= 0x0F;
+  
+  *result = a - b;
+
+  if (*flags & CARRY_FLAG) {
+    (*result)--;
+    *flags |= HALF_FLAG;
+  }
+  if (*result > 0x0F) {
+    *flags |= CARRY_FLAG;
+  }
+  *flags |= SUB_FLAG;
+  *result &= 0x0F;
+  return z80_ok;
+}
+
+z80_status z80_subByte(z80_t *z80, mem_t *mem, uint8_t *dst, 
+                       uint8_t *src, uint32_t flag) {
+  if (z80 == NULL || mem == NULL || dst == NULL) {
+    return z80_bad_param;
+  }
+  uint8_t srcData = 0;
+  if (flag & z80_srcIsAddr) {
+    z80->dt = 8;
+    VALID_MEM_OP(mem_readByte(mem, *((uint16_t *)src), &srcData));
+  } else {
+    z80->dt = 4;
+    srcData = *src;
+  }
+
+  if ((flag & z80_withCarry) && (z80->f & CARRY_FLAG)) {
+    srcData--;
+  }
+
+  uint8_t opFlags = 0;
+  uint8_t result = 0;
+  subNibble(*dst, srcData, &opFlags, &result);
+  *dst = (*dst & 0xF0) | (result & 0x0F);
+  subNibble(*dst >> 4, srcData >> 4, &opFlags, &result);
+  *dst = (*dst & 0x0F) | ((result << 4) & 0xF0);
+
+  z80->f = opFlags;
+
+  return z80_ok;
+}

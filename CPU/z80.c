@@ -556,6 +556,72 @@ int8_t z80_step(z80_t *z80, mem_t *mem) {
       z80_mov(state, &(z80->a), z80->a);
       break;
 
+    case zADD_a_b: // 0x80
+      z80_addByte(state, &(z80->a), &(z80->b), 0);
+      break;
+
+    case zADD_a_c: // 0x81
+      z80_addByte(state, &(z80->a), &(z80->c), 0);
+      break;
+
+    case zADD_a_d: // 0x82
+      z80_addByte(state, &(z80->a), &(z80->d), 0);
+      break;
+
+    case zADD_a_e: // 0x83
+      z80_addByte(state, &(z80->a), &(z80->e), 0);
+      break;
+
+    case zADD_a_h: // 0x84
+      z80_addByte(state, &(z80->a), &(z80->h), 0);
+      break;
+
+    case zADD_a_l: // 0x85
+      z80_addByte(state, &(z80->a), &(z80->l), 0);
+      break;
+
+    case zADD_a_HL: // 0x86
+      z80_addByte(state, &(z80->a), &(z80->hl), z80_srcIsAddr);
+      break;
+
+    case zADD_a_a: // 0x87
+      z80_addByte(state, &(z80->a), &(z80->a), 0);
+      break;
+
+    case zADC_a_b: // 0x88
+      z80_addByte(state, &(z80->a), &(z80->b), z80_withCarry);
+      break;
+
+    case zADC_a_c: // 0x89
+      z80_addByte(state, &(z80->a), &(z80->c), z80_withCarry);
+      break;
+
+    case zADC_a_d: // 0x8A
+      z80_addByte(state, &(z80->a), &(z80->d), z80_withCarry);
+      break;
+
+    case zADC_a_e: // 0x8B
+      z80_addByte(state, &(z80->a), &(z80->e), z80_withCarry);
+      break;
+
+    case zADC_a_h: // 0x8C
+      z80_addByte(state, &(z80->a), &(z80->h), z80_withCarry);
+      break;
+
+    case zADC_a_l: // 0x8D
+      z80_addByte(state, &(z80->a), &(z80->l), z80_withCarry);
+      break;
+
+    case zADC_a_HL: // 0x8E
+      z80_addByte(state, &(z80->a), &(z80->hl), 
+                  z80_srcIsAddr | z80_withCarry);
+      break;
+
+    case zADC_a_a: // 0x8F
+      z80_addByte(state, &(z80->a), &(z80->a), z80_withCarry);
+      break;
+      
+
     case 0xCB:      
       z80_extension(z80, mem);
       break;
