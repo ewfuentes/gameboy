@@ -18,16 +18,6 @@ void z80_init(z80_t *z80) {
   z80->pc = 0x0000;
 }
 
-void z80_testBit(z80_t *z80, uint8_t data, uint8_t bit) {
-  z80->f &= ~SUB_FLAG;
-  z80->f |= HALF_FLAG; 
-  if (data & (1<<bit)) {
-    z80->f &= ~ZERO_FLAG;
-  }else {
-    z80->f |= ZERO_FLAG;
-  }
-}
-
 void z80_RLreg(z80_t *z80, uint8_t *reg) {
   uint8_t newCarry = (*reg & 0x80) >> 7; 
   *reg = *reg << 1;
@@ -52,7 +42,634 @@ int8_t z80_extension(z80_t *z80, mem_t *mem) {
 
   uint8_t tempB = 0;
   uint16_t tempS = 0;
+  uint8_t *tempP = NULL;
   switch(opcode) {
+
+    case zBIT0_b: // 0x40
+      z80_testBit(state, z80->b, 0);
+      break;
+    case zBIT0_c: // 0x41
+      z80_testBit(state, z80->c, 0);
+      break;
+    case zBIT0_d: // 0x42
+      z80_testBit(state, z80->d, 0);
+      break;
+    case zBIT0_e: // 0x43
+      z80_testBit(state, z80->e, 0);
+      break;
+    case zBIT0_h: // 0x44
+      z80_testBit(state, z80->h, 0);
+      break;
+    case zBIT0_l: // 0x45
+      z80_testBit(state, z80->l, 0);
+      break;
+    case zBIT0_HL: // 0x46
+      VALID_MEM_OP(mem_readByte(mem, z80->hl, &tempB));
+      z80_testBit(state, tempB, 0);
+      z80->dt = 16;
+      break;
+    case zBIT0_a: // 0x47
+      z80_testBit(state, z80->a, 0);
+      break;
+    case zBIT1_b: // 0x48
+      z80_testBit(state, z80->b, 1);
+      break;
+    case zBIT1_c: // 0x49
+      z80_testBit(state, z80->c, 1);
+      break;
+    case zBIT1_d: // 0x4A
+      z80_testBit(state, z80->d, 1);
+      break;
+    case zBIT1_e: // 0x4B
+      z80_testBit(state, z80->e, 1);
+      break;
+    case zBIT1_h: // 0x4C
+      z80_testBit(state, z80->h, 1);
+      break;
+    case zBIT1_l: // 0x4D
+      z80_testBit(state, z80->l, 1);
+      break;
+    case zBIT1_HL: // 0x4E
+      VALID_MEM_OP(mem_readByte(mem, z80->hl, &tempB));
+      z80_testBit(state, tempB, 1);
+      z80->dt = 16;
+      break;
+    case zBIT1_a: // 0x4F
+      z80_testBit(state, z80->a, 1);
+      break;
+    case zBIT2_b: // 0x50
+      z80_testBit(state, z80->b, 2);
+      break;
+    case zBIT2_c: // 0x51
+      z80_testBit(state, z80->c, 2);
+      break;
+    case zBIT2_d: // 0x52
+      z80_testBit(state, z80->d, 2);
+      break;
+    case zBIT2_e: // 0x53
+      z80_testBit(state, z80->e, 2);
+      break;
+    case zBIT2_h: // 0x54
+      z80_testBit(state, z80->h, 2);
+      break;
+    case zBIT2_l: // 0x55
+      z80_testBit(state, z80->l, 2);
+      break;
+    case zBIT2_HL: // 0x56
+      VALID_MEM_OP(mem_readByte(mem, z80->hl, &tempB));
+      z80_testBit(state, tempB, 2);
+      z80->dt = 16;
+      break;
+    case zBIT2_a: // 0x57
+      z80_testBit(state, z80->a, 2);
+      break;
+    case zBIT3_b: // 0x58
+      z80_testBit(state, z80->b, 3);
+      break;
+    case zBIT3_c: // 0x59
+      z80_testBit(state, z80->c, 3);
+      break;
+    case zBIT3_d: // 0x5A
+      z80_testBit(state, z80->d, 3);
+      break;
+    case zBIT3_e: // 0x5B
+      z80_testBit(state, z80->e, 3);
+      break;
+    case zBIT3_h: // 0x5C
+      z80_testBit(state, z80->h, 3);
+      break;
+    case zBIT3_l: // 0x5D
+      z80_testBit(state, z80->l, 3);
+      break;
+    case zBIT3_HL: // 0x5E
+      VALID_MEM_OP(mem_readByte(mem, z80->hl, &tempB));
+      z80_testBit(state, tempB, 3);
+      z80->dt = 16;
+      break;
+    case zBIT3_a: // 0x5F
+      z80_testBit(state, z80->a, 3);
+      break;
+    case zBIT4_b: // 0x60
+      z80_testBit(state, z80->b, 4);
+      break;
+    case zBIT4_c: // 0x61
+      z80_testBit(state, z80->c, 4);
+      break;
+    case zBIT4_d: // 0x62
+      z80_testBit(state, z80->d, 4);
+      break;
+    case zBIT4_e: // 0x63
+      z80_testBit(state, z80->e, 4);
+      break;
+    case zBIT4_h: // 0x64
+      z80_testBit(state, z80->h, 4);
+      break;
+    case zBIT4_l: // 0x65
+      z80_testBit(state, z80->l, 4);
+      break;
+    case zBIT4_HL: // 0x66
+      VALID_MEM_OP(mem_readByte(mem, z80->hl, &tempB));
+      z80_testBit(state, tempB, 4);
+      z80->dt = 16;
+      break;
+    case zBIT4_a: // 0x67
+      z80_testBit(state, z80->a, 4);
+      break;
+    case zBIT5_b: // 0x68
+      z80_testBit(state, z80->b, 5);
+      break;
+    case zBIT5_c: // 0x69
+      z80_testBit(state, z80->c, 5);
+      break;
+    case zBIT5_d: // 0x6A
+      z80_testBit(state, z80->d, 5);
+      break;
+    case zBIT5_e: // 0x6B
+      z80_testBit(state, z80->e, 5);
+      break;
+    case zBIT5_h: // 0x6C
+      z80_testBit(state, z80->h, 5);
+      break;
+    case zBIT5_l: // 0x6D
+      z80_testBit(state, z80->l, 5);
+      break;
+    case zBIT5_HL: // 0x6E
+      VALID_MEM_OP(mem_readByte(mem, z80->hl, &tempB));
+      z80_testBit(state, tempB, 5);
+      z80->dt = 16;
+      break;
+    case zBIT5_a: // 0x6F
+      z80_testBit(state, z80->a, 5);
+      break;
+    case zBIT6_b: // 0x70
+      z80_testBit(state, z80->b, 6);
+      break;
+    case zBIT6_c: // 0x71
+      z80_testBit(state, z80->c, 6);
+      break;
+    case zBIT6_d: // 0x72
+      z80_testBit(state, z80->d, 6);
+      break;
+    case zBIT6_e: // 0x73
+      z80_testBit(state, z80->e, 6);
+      break;
+    case zBIT6_h: // 0x74
+      z80_testBit(state, z80->h, 6);
+      break;
+    case zBIT6_l: // 0x75
+      z80_testBit(state, z80->l, 6);
+      break;
+    case zBIT6_HL: // 0x76
+      VALID_MEM_OP(mem_readByte(mem, z80->hl, &tempB));
+      z80_testBit(state, tempB, 6);
+      z80->dt = 16;
+      break;
+    case zBIT6_a: // 0x77
+      z80_testBit(state, z80->a, 6);
+      break;
+    case zBIT7_b: // 0x78
+      z80_testBit(state, z80->b, 7);
+      break;
+    case zBIT7_c: // 0x79
+      z80_testBit(state, z80->c, 7);
+      break;
+    case zBIT7_d: // 0x7A
+      z80_testBit(state, z80->d, 7);
+      break;
+    case zBIT7_e: // 0x7B
+      z80_testBit(state, z80->e, 7);
+      break;
+    case zBIT7_h: // 0x7C
+      z80_testBit(state, z80->h, 7);
+      break;
+    case zBIT7_l: // 0x7D
+      z80_testBit(state, z80->l, 7);
+      break;
+    case zBIT7_HL: // 0x7E
+      VALID_MEM_OP(mem_readByte(mem, z80->hl, &tempB));
+      z80_testBit(state, tempB, 7);
+      z80->dt = 16;
+      break;
+    case zBIT7_a: // 0x7F
+      z80_testBit(state, z80->a, 7);
+      break;
+    case zRES0_b: // 0x80
+      z80_resetBit(state, &(z80->b), 0);
+      break;
+    case zRES0_c: // 0x81
+      z80_resetBit(state, &(z80->c), 0);
+      break;
+    case zRES0_d: // 0x82
+      z80_resetBit(state, &(z80->d), 0);
+      break;
+    case zRES0_e: // 0x83
+      z80_resetBit(state, &(z80->e), 0);
+      break;
+    case zRES0_h: // 0x84
+      z80_resetBit(state, &(z80->h), 0);
+      break;
+    case zRES0_l: // 0x85
+      z80_resetBit(state, &(z80->l), 0);
+      break;
+    case zRES0_HL: // 0x86
+      VALID_MEM_OP(mem_getPointer(mem, z80->hl, &tempP));
+      z80_resetBit(state, tempP, 0);
+      z80->dt = 16;
+      break;
+    case zRES0_a: // 0x87
+      z80_resetBit(state, &(z80->a), 0);
+      break;
+    case zRES1_b: // 0x88
+      z80_resetBit(state, &(z80->b), 1);
+      break;
+    case zRES1_c: // 0x89
+      z80_resetBit(state, &(z80->c), 1);
+      break;
+    case zRES1_d: // 0x8A
+      z80_resetBit(state, &(z80->d), 1);
+      break;
+    case zRES1_e: // 0x8B
+      z80_resetBit(state, &(z80->e), 1);
+      break;
+    case zRES1_h: // 0x8C
+      z80_resetBit(state, &(z80->h), 1);
+      break;
+    case zRES1_l: // 0x8D
+      z80_resetBit(state, &(z80->l), 1);
+      break;
+    case zRES1_HL: // 0x8E
+      VALID_MEM_OP(mem_getPointer(mem, z80->hl, &tempP));
+      z80_resetBit(state, tempP, 1);
+      z80->dt = 16;
+      break;
+    case zRES1_a: // 0x8F
+      z80_resetBit(state, &(z80->a), 1);
+      break;
+    case zRES2_b: // 0x90
+      z80_resetBit(state, &(z80->b), 2);
+      break;
+    case zRES2_c: // 0x91
+      z80_resetBit(state, &(z80->c), 2);
+      break;
+    case zRES2_d: // 0x92
+      z80_resetBit(state, &(z80->d), 2);
+      break;
+    case zRES2_e: // 0x93
+      z80_resetBit(state, &(z80->e), 2);
+      break;
+    case zRES2_h: // 0x94
+      z80_resetBit(state, &(z80->h), 2);
+      break;
+    case zRES2_l: // 0x95
+      z80_resetBit(state, &(z80->l), 2);
+      break;
+    case zRES2_HL: // 0x96
+      VALID_MEM_OP(mem_getPointer(mem, z80->hl, &tempP));
+      z80_resetBit(state, tempP, 2);
+      z80->dt = 16;
+      break;
+    case zRES2_a: // 0x97
+      z80_resetBit(state, &(z80->a), 2);
+      break;
+    case zRES3_b: // 0x98
+      z80_resetBit(state, &(z80->b), 3);
+      break;
+    case zRES3_c: // 0x99
+      z80_resetBit(state, &(z80->c), 3);
+      break;
+    case zRES3_d: // 0x9A
+      z80_resetBit(state, &(z80->d), 3);
+      break;
+    case zRES3_e: // 0x9B
+      z80_resetBit(state, &(z80->e), 3);
+      break;
+    case zRES3_h: // 0x9C
+      z80_resetBit(state, &(z80->h), 3);
+      break;
+    case zRES3_l: // 0x9D
+      z80_resetBit(state, &(z80->l), 3);
+      break;
+    case zRES3_HL: // 0x9E
+      VALID_MEM_OP(mem_getPointer(mem, z80->hl, &tempP));
+      z80_resetBit(state, tempP, 3);
+      z80->dt = 16;
+      break;
+    case zRES3_a: // 0x9F
+      z80_resetBit(state, &(z80->a), 3);
+      break;
+    case zRES4_b: // 0xA0
+      z80_resetBit(state, &(z80->b), 4);
+      break;
+    case zRES4_c: // 0xA1
+      z80_resetBit(state, &(z80->c), 4);
+      break;
+    case zRES4_d: // 0xA2
+      z80_resetBit(state, &(z80->d), 4);
+      break;
+    case zRES4_e: // 0xA3
+      z80_resetBit(state, &(z80->e), 4);
+      break;
+    case zRES4_h: // 0xA4
+      z80_resetBit(state, &(z80->h), 4);
+      break;
+    case zRES4_l: // 0xA5
+      z80_resetBit(state, &(z80->l), 4);
+      break;
+    case zRES4_HL: // 0xA6
+      VALID_MEM_OP(mem_getPointer(mem, z80->hl, &tempP));
+      z80_resetBit(state, tempP, 4);
+      z80->dt = 16;
+      break;
+    case zRES4_a: // 0xA7
+      z80_resetBit(state, &(z80->a), 4);
+      break;
+    case zRES5_b: // 0xA8
+      z80_resetBit(state, &(z80->b), 5);
+      break;
+    case zRES5_c: // 0xA9
+      z80_resetBit(state, &(z80->c), 5);
+      break;
+    case zRES5_d: // 0xAA
+      z80_resetBit(state, &(z80->d), 5);
+      break;
+    case zRES5_e: // 0xAB
+      z80_resetBit(state, &(z80->e), 5);
+      break;
+    case zRES5_h: // 0xAC
+      z80_resetBit(state, &(z80->h), 5);
+      break;
+    case zRES5_l: // 0xAD
+      z80_resetBit(state, &(z80->l), 5);
+      break;
+    case zRES5_HL: // 0xAE
+      VALID_MEM_OP(mem_getPointer(mem, z80->hl, &tempP));
+      z80_resetBit(state, tempP, 5);
+      z80->dt = 16;
+      break;
+    case zRES5_a: // 0xAF
+      z80_resetBit(state, &(z80->a), 5);
+      break;
+    case zRES6_b: // 0xB0
+      z80_resetBit(state, &(z80->b), 6);
+      break;
+    case zRES6_c: // 0xB1
+      z80_resetBit(state, &(z80->c), 6);
+      break;
+    case zRES6_d: // 0xB2
+      z80_resetBit(state, &(z80->d), 6);
+      break;
+    case zRES6_e: // 0xB3
+      z80_resetBit(state, &(z80->e), 6);
+      break;
+    case zRES6_h: // 0xB4
+      z80_resetBit(state, &(z80->h), 6);
+      break;
+    case zRES6_l: // 0xB5
+      z80_resetBit(state, &(z80->l), 6);
+      break;
+    case zRES6_HL: // 0xB6
+      VALID_MEM_OP(mem_getPointer(mem, z80->hl, &tempP));
+      z80_resetBit(state, tempP, 6);
+      z80->dt = 16;
+      break;
+    case zRES6_a: // 0xB7
+      z80_resetBit(state, &(z80->a), 6);
+      break;
+    case zRES7_b: // 0xB8
+      z80_resetBit(state, &(z80->b), 7);
+      break;
+    case zRES7_c: // 0xB9
+      z80_resetBit(state, &(z80->c), 7);
+      break;
+    case zRES7_d: // 0xBA
+      z80_resetBit(state, &(z80->d), 7);
+      break;
+    case zRES7_e: // 0xBB
+      z80_resetBit(state, &(z80->e), 7);
+      break;
+    case zRES7_h: // 0xBC
+      z80_resetBit(state, &(z80->h), 7);
+      break;
+    case zRES7_l: // 0xBD
+      z80_resetBit(state, &(z80->l), 7);
+      break;
+    case zRES7_HL: // 0xBE
+      VALID_MEM_OP(mem_getPointer(mem, z80->hl, &tempP));
+      z80_resetBit(state, tempP, 7);
+      z80->dt = 16;
+      break;
+    case zRES7_a: // 0xBF
+      z80_setBit(state, &(z80->a), 7);
+      break;
+    case zSET0_b: // 0xC0
+      z80_setBit(state, &(z80->b), 0);
+      break;
+    case zSET0_c: // 0xC1
+      z80_setBit(state, &(z80->c), 0);
+      break;
+    case zSET0_d: // 0xC2
+      z80_setBit(state, &(z80->d), 0);
+      break;
+    case zSET0_e: // 0xC3
+      z80_setBit(state, &(z80->e), 0);
+      break;
+    case zSET0_h: // 0xC4
+      z80_setBit(state, &(z80->h), 0);
+      break;
+    case zSET0_l: // 0xC5
+      z80_setBit(state, &(z80->l), 0);
+      break;
+    case zSET0_HL: // 0xC6
+      VALID_MEM_OP(mem_getPointer(mem, z80->hl, &tempP));
+      z80_setBit(state, tempP, 0);
+      z80->dt = 16;
+      break;
+    case zSET0_a: // 0xC7
+      z80_setBit(state, &(z80->a), 0);
+      break;
+    case zSET1_b: // 0xC8
+      z80_setBit(state, &(z80->b), 1);
+      break;
+    case zSET1_c: // 0xC9
+      z80_setBit(state, &(z80->c), 1);
+      break;
+    case zSET1_d: // 0xCA
+      z80_setBit(state, &(z80->d), 1);
+      break;
+    case zSET1_e: // 0xCB
+      z80_setBit(state, &(z80->e), 1);
+      break;
+    case zSET1_h: // 0xCC
+      z80_setBit(state, &(z80->h), 1);
+      break;
+    case zSET1_l: // 0xCD
+      z80_setBit(state, &(z80->l), 1);
+      break;
+    case zSET1_HL: // 0xCE
+      VALID_MEM_OP(mem_getPointer(mem, z80->hl, &tempP));
+      z80_setBit(state, tempP, 1);
+      z80->dt = 16;
+      break;
+    case zSET1_a: // 0xCF
+      z80_setBit(state, &(z80->a), 1);
+      break;
+    case zSET2_b: // 0xD0
+      z80_setBit(state, &(z80->b), 2);
+      break;
+    case zSET2_c: // 0xD1
+      z80_setBit(state, &(z80->c), 2);
+      break;
+    case zSET2_d: // 0xD2
+      z80_setBit(state, &(z80->d), 2);
+      break;
+    case zSET2_e: // 0xD3
+      z80_setBit(state, &(z80->e), 2);
+      break;
+    case zSET2_h: // 0xD4
+      z80_setBit(state, &(z80->h), 2);
+      break;
+    case zSET2_l: // 0xD5
+      z80_setBit(state, &(z80->l), 2);
+      break;
+    case zSET2_HL: // 0xD6
+      VALID_MEM_OP(mem_getPointer(mem, z80->hl, &tempP));
+      z80_setBit(state, tempP, 2);
+      z80->dt = 16;
+      break;
+    case zSET2_a: // 0xD7
+      z80_setBit(state, &(z80->a), 2);
+      break;
+    case zSET3_b: // 0xD8
+      z80_setBit(state, &(z80->b), 3);
+      break;
+    case zSET3_c: // 0xD9
+      z80_setBit(state, &(z80->c), 3);
+      break;
+    case zSET3_d: // 0xDA
+      z80_setBit(state, &(z80->d), 3);
+      break;
+    case zSET3_e: // 0xDB
+      z80_setBit(state, &(z80->e), 3);
+      break;
+    case zSET3_h: // 0xDC
+      z80_setBit(state, &(z80->h), 3);
+      break;
+    case zSET3_l: // 0xDD
+      z80_setBit(state, &(z80->l), 3);
+      break;
+    case zSET3_HL: // 0xDE
+      VALID_MEM_OP(mem_getPointer(mem, z80->hl, &tempP));
+      z80_setBit(state, tempP, 3);
+      z80->dt = 16;
+      break;
+    case zSET3_a: // 0xDF
+      z80_setBit(state, &(z80->a), 3);
+      break;
+    case zSET4_b: // 0xE0
+      z80_setBit(state, &(z80->b), 4);
+      break;
+    case zSET4_c: // 0xE1
+      z80_setBit(state, &(z80->c), 4);
+      break;
+    case zSET4_d: // 0xE2
+      z80_setBit(state, &(z80->d), 4);
+      break;
+    case zSET4_e: // 0xE3
+      z80_setBit(state, &(z80->e), 4);
+      break;
+    case zSET4_h: // 0xE4
+      z80_setBit(state, &(z80->h), 4);
+      break;
+    case zSET4_l: // 0xE5
+      z80_setBit(state, &(z80->l), 4);
+      break;
+    case zSET4_HL: // 0xE6
+      VALID_MEM_OP(mem_getPointer(mem, z80->hl, &tempP));
+      z80_setBit(state, tempP, 4);
+      z80->dt = 16;
+      break;
+    case zSET4_a: // 0xE7
+      z80_setBit(state, &(z80->a), 4);
+      break;
+    case zSET5_b: // 0xE8
+      z80_setBit(state, &(z80->b), 5);
+      break;
+    case zSET5_c: // 0xE9
+      z80_setBit(state, &(z80->c), 5);
+      break;
+    case zSET5_d: // 0xEA
+      z80_setBit(state, &(z80->d), 5);
+      break;
+    case zSET5_e: // 0xEB
+      z80_setBit(state, &(z80->e), 5);
+      break;
+    case zSET5_h: // 0xEC
+      z80_setBit(state, &(z80->h), 5);
+      break;
+    case zSET5_l: // 0xED
+      z80_setBit(state, &(z80->l), 5);
+      break;
+    case zSET5_HL: // 0xEE
+      VALID_MEM_OP(mem_getPointer(mem, z80->hl, &tempP));
+      z80_setBit(state, tempP, 5);
+      z80->dt = 16;
+      break;
+    case zSET5_a: // 0xEF
+      z80_setBit(state, &(z80->a), 5);
+      break;
+    case zSET6_b: // 0xF0
+      z80_setBit(state, &(z80->b), 6);
+      break;
+    case zSET6_c: // 0xF1
+      z80_setBit(state, &(z80->c), 6);
+      break;
+    case zSET6_d: // 0xF2
+      z80_setBit(state, &(z80->d), 6);
+      break;
+    case zSET6_e: // 0xF3
+      z80_setBit(state, &(z80->e), 6);
+      break;
+    case zSET6_h: // 0xF4
+      z80_setBit(state, &(z80->h), 6);
+      break;
+    case zSET6_l: // 0xF5
+      z80_setBit(state, &(z80->l), 6);
+      break;
+    case zSET6_HL: // 0xF6
+      VALID_MEM_OP(mem_getPointer(mem, z80->hl, &tempP));
+      z80_setBit(state, tempP, 6);
+      z80->dt = 16;
+      break;
+    case zSET6_a: // 0xF7
+      z80_setBit(state, &(z80->a), 6);
+      break;
+    case zSET7_b: // 0xF8
+      z80_setBit(state, &(z80->b), 7);
+      break;
+    case zSET7_c: // 0xF9
+      z80_setBit(state, &(z80->c), 7);
+      break;
+    case zSET7_d: // 0xFA
+      z80_setBit(state, &(z80->d), 7);
+      break;
+    case zSET7_e: // 0xFB
+      z80_setBit(state, &(z80->e), 7);
+      break;
+    case zSET7_h: // 0xFC
+      z80_setBit(state, &(z80->h), 7);
+      break;
+    case zSET7_l: // 0xFD
+      z80_setBit(state, &(z80->l), 7);
+      break;
+    case zSET7_HL: // 0xFE
+      VALID_MEM_OP(mem_getPointer(mem, z80->hl, &tempP));
+      z80_setBit(state, tempP, 7);
+      z80->dt = 16;
+      break;
+    case zSET7_a: // 0xFF
+      z80_setBit(state, &(z80->a), 7);
+      break;
+
     default:
       printf("ext opcode not implement: %x\r\n", opcode);
       return -1;
@@ -581,7 +1198,7 @@ int8_t z80_step(z80_t *z80, mem_t *mem) {
       break;
 
     case zADD_a_HL: // 0x86
-      z80_addByte(state, &(z80->a), &(z80->hl), z80_srcIsAddr);
+      z80_addByte(state, &(z80->a), (uint8_t *)&(z80->hl), z80_srcIsAddr);
       break;
 
     case zADD_a_a: // 0x87
@@ -613,7 +1230,7 @@ int8_t z80_step(z80_t *z80, mem_t *mem) {
       break;
 
     case zADC_a_HL: // 0x8E
-      z80_addByte(state, &(z80->a), &(z80->hl), 
+      z80_addByte(state, &(z80->a), (uint8_t *)&(z80->hl), 
                   z80_srcIsAddr | z80_withCarry);
       break;
 
@@ -621,6 +1238,277 @@ int8_t z80_step(z80_t *z80, mem_t *mem) {
       z80_addByte(state, &(z80->a), &(z80->a), z80_withCarry);
       break;
       
+    case zSUB_b: // 0x90
+      z80_subByte(state, &(z80->a), (uint8_t *)&(z80->b), 0);
+      break;
+
+    case zSUB_c: // 0x91
+      z80_subByte(state, &(z80->a), &(z80->c), 0);
+      break;
+
+    case zSUB_d: // 0x92
+      z80_subByte(state, &(z80->a), &(z80->d), 0);
+      break;
+
+    case zSUB_e: // 0x93
+      z80_subByte(state, &(z80->a), &(z80->e), 0);
+      break;
+
+    case zSUB_h: // 0x94
+      z80_subByte(state, &(z80->a), &(z80->h), 0);
+      break;
+
+    case zSUB_l: // 0x95
+      z80_subByte(state, &(z80->a), &(z80->l), 0);
+      break;
+
+    case zSUB_HL: // 0x96
+      z80_subByte(state, &(z80->a), (uint8_t *)&(z80->hl), 
+                  z80_srcIsAddr);
+      break;
+
+    case zSUB_a: // 0x97
+      z80_subByte(state, &(z80->a), &(z80->a), 0);
+      break;
+
+    case zSBC_a_b: // 0x98
+      z80_subByte(state, &(z80->a), &(z80->b), z80_withCarry);
+      break;
+
+    case zSBC_a_c: // 0x99
+      z80_subByte(state, &(z80->a), &(z80->c), z80_withCarry);
+      break;
+
+    case zSBC_a_d: // 0x9A
+      z80_subByte(state, &(z80->a), &(z80->d), z80_withCarry);
+      break;
+
+    case zSBC_a_e: // 0x9B
+      z80_subByte(state, &(z80->a), &(z80->e), z80_withCarry);
+      break;
+
+    case zSBC_a_h: // 0x9C
+      z80_subByte(state, &(z80->a), &(z80->h), z80_withCarry);
+      break;
+
+    case zSBC_a_l: // 0x9D
+      z80_subByte(state, &(z80->a), &(z80->l), z80_withCarry);
+      break;
+
+    case zSBC_a_HL: // 0x9E
+      z80_subByte(state, &(z80->a), (uint8_t *)&(z80->hl), 
+                  z80_srcIsAddr | z80_withCarry);
+      break;
+
+    case zSBC_a_a: // 0x9F
+      z80_subByte(state, &(z80->a), &(z80->a), z80_withCarry);
+      break;
+
+    case zAND_b: // 0xA0
+      z80_and(state, &(z80->b), 0);
+      break;
+
+    case zAND_c: // 0xA1
+      z80_and(state, &(z80->c), 0);
+      break;
+
+    case zAND_d: // 0xA2
+      z80_and(state, &(z80->d), 0);
+      break;
+
+    case zAND_e: // 0xA3
+      z80_and(state, &(z80->e), 0);
+      break;
+
+    case zAND_h: // 0xA4
+      z80_and(state, &(z80->h), 0);
+      break;
+
+    case zAND_l: // 0xA5
+      z80_and(state, &(z80->l), 0);
+      break;
+
+    case zAND_HL: // 0xA6
+      z80_and(state, (uint8_t *)&(z80->hl), z80_srcIsAddr);
+      break;
+
+    case zAND_a: // 0xA7
+      z80_and(state, &(z80->a), 0);
+      break;
+
+    case zXOR_b: // 0xA8
+      z80_xor(state, &(z80->b), 0);
+      break;
+
+    case zXOR_c: // 0xA9
+      z80_xor(state, &(z80->c), 0);
+      break;
+
+    case zXOR_d: // 0xAA
+      z80_xor(state, &(z80->d), 0);
+      break;
+
+    case zXOR_e: // 0xAB
+      z80_xor(state, &(z80->e), 0);
+      break;
+
+    case zXOR_h: // 0xAC
+      z80_xor(state, &(z80->h), 0);
+      break;
+
+    case zXOR_l: // 0xAD
+      z80_xor(state, &(z80->l), 0);
+      break;
+
+    case zXOR_HL: // 0xAE
+      z80_xor(state, (uint8_t *)&(z80->hl), z80_srcIsAddr);
+      break;
+
+    case zXOR_a: // 0xAF
+      z80_xor(state, &(z80->a), 0);
+      break;
+
+    case zOR_b: // 0xB0
+      z80_or(state, &(z80->b), 0);
+      break;
+
+    case zOR_c: // 0xB1
+      z80_or(state, &(z80->c), 0);
+      break;
+
+    case zOR_d: // 0xB2
+      z80_or(state, &(z80->d), 0);
+      break;
+
+    case zOR_e: // 0xB3
+      z80_or(state, &(z80->e), 0);
+      break;
+
+    case zOR_h: // 0xB4
+      z80_or(state, &(z80->h), 0);
+      break;
+
+    case zOR_l: // 0xB5
+      z80_or(state, &(z80->l), 0);
+      break;
+
+    case zOR_HL: // 0xB6
+      z80_or(state, (uint8_t *)&(z80->hl), z80_srcIsAddr);
+      break;
+
+    case zOR_a: // 0xB7
+      z80_or(state, &(z80->a), 0);
+      break;
+
+    case zCP_b: // 0xB8
+      z80_cp(state, &(z80->b), 0);
+      break;
+
+    case zCP_c: // 0xB9
+      z80_cp(state, &(z80->c), 0);
+      break;
+
+    case zCP_d: // 0xBA
+      z80_cp(state, &(z80->d), 0);
+      break;
+
+    case zCP_e: // 0xBB
+      z80_cp(state, &(z80->e), 0);
+      break;
+
+    case zCP_h: // 0xBC
+      z80_cp(state, &(z80->h), 0);
+      break;
+
+    case zCP_l: // 0xBD
+      z80_cp(state, &(z80->l), 0);
+      break;
+
+    case zCP_HL: // 0xBE
+      z80_cp(state, (uint8_t *)&(z80->hl), z80_srcIsAddr);
+      break;
+
+    case zCP_a: // 0xBF
+      z80_cp(state, &(z80->a), 0);
+      break;
+
+    case zPOP_bc: // 0xC1
+      z80_pop(state, &(z80->bc));
+      break;
+
+    case zPUSH_bc: // 0xC5
+      z80_push(state, z80->bc);
+      break;
+
+    case zADD_a_d8: // 0xC6
+      z80_addByte(state, &(z80->a), (uint8_t *)&(z80->pc), 
+                  z80_srcIsAddr);
+      z80->pc++;
+      break;
+
+    case zADC_a_d8: // 0xCE
+      z80_addByte(state, &(z80->a), (uint8_t *)&(z80->pc), 
+                  z80_srcIsAddr | z80_withCarry);
+      z80->pc++;
+      break;
+
+    case zPOP_de: // 0xD1
+      z80_pop(state, &(z80->de));
+      break;
+
+    case zPUSH_de: // 0xD5
+      z80_push(state, z80->de);
+      break;
+
+    case zSUB_d8: // 0xD6
+      z80_subByte(state, &(z80->a), (uint8_t *)&(z80->pc),
+                  z80_srcIsAddr);
+      z80->pc++;
+      break;
+
+    case zSBC_a_d8: // 0xDE
+      z80_subByte(state, &(z80->a), (uint8_t *)&(z80->pc), 
+                  z80_srcIsAddr | z80_withCarry);
+      z80->pc++;
+      break;
+
+    case zPOP_hl: // 0xE1
+      z80_pop(state, &(z80->hl));
+      break;
+
+    case zPUSH_hl: // 0xE5
+      z80_push(state, z80->hl);
+      break;
+
+    case zAND_d8: // 0xD6
+      z80_and(state, (uint8_t *)&(z80->pc), z80_srcIsAddr);
+      z80->pc++;
+      break;
+
+    case zXOR_d8: // 0xDE
+      z80_xor(state, (uint8_t *)&(z80->pc), 
+              z80_srcIsAddr | z80_withCarry);
+      z80->pc++;
+      break;
+
+    case zPOP_af: // 0xF1
+      z80_pop(state, &(z80->af));
+      break;
+
+    case zPUSH_af: // 0xF5
+      z80_push(state, z80->af);
+      break;
+
+    case zOR_d8: // 0xF6
+      z80_or(state, (uint8_t *)&(z80->pc), z80_srcIsAddr);
+      z80->pc++;
+      break;
+
+    case zCP_d8: // 0xFE
+      z80_cp(state, (uint8_t *)&(z80->pc), 
+             z80_srcIsAddr | z80_withCarry);
+      z80->pc++;
+      break;
 
     case 0xCB:      
       z80_extension(z80, mem);

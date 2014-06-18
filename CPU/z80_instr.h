@@ -559,4 +559,31 @@ z80_status z80_jp(z80_t *z80, mem_t *mem, uint8_t numAddrBytes,
 z80_status z80_addByte(z80_t *z80, mem_t *mem, uint8_t *dst, 
                        uint8_t *src, uint32_t flag);
 
+z80_status z80_subByte(z80_t *z80, mem_t *mem, uint8_t *dst, 
+                       uint8_t *src, uint32_t flag);
+
+z80_status z80_and(z80_t *z80, mem_t *mem, uint8_t *reg, 
+                   uint32_t flag);
+
+z80_status z80_xor(z80_t *z80, mem_t *mem, uint8_t *reg,
+                   uint32_t flag);
+
+z80_status z80_or(z80_t *z80, mem_t *mem, uint8_t *reg,
+                   uint32_t flag);
+
+z80_status z80_cp(z80_t *z80, mem_t *mem, uint8_t *src, 
+                  uint32_t flag);
+
+z80_status z80_pop(z80_t *z80, mem_t *mem, uint16_t *reg);
+
+z80_status z80_push(z80_t *z80, mem_t *mem, uint16_t reg);
+
+z80_status z80_testBit(z80_t *z80, mem_t *mem, uint8_t data, uint8_t bit);
+
+z80_status z80_resetBit(z80_t *z80, mem_t *mem, uint8_t *data, 
+                       uint8_t bit);
+
+z80_status z80_setBit(z80_t *z80, mem_t *mem, uint8_t *data, 
+                       uint8_t bit);
+
 #endif
