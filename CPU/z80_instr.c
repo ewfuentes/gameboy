@@ -27,8 +27,8 @@ z80_status z80_mov(z80_t *z80, mem_t *mem, uint8_t *dst,
   return z80_movGen(z80, mem, dst, &src, 0);
 }
 
-z80_status z80_movGen(z80_t *z80, mem_t *mem, void *dst,
-                    void *src, uint32_t flags) {
+z80_status z80_movGen(z80_t *z80, mem_t *mem, uint8_t *dst,
+                    uint8_t *src, uint32_t flags) {
   if (z80 == NULL || dst == NULL) {
     return z80_bad_param;
   }
@@ -102,7 +102,7 @@ z80_status z80_decShort(z80_t *z80, mem_t *mem, uint16_t *reg) {
   return z80_ok;
 }
 
-z80_status z80_incByte(z80_t *z80, mem_t *mem, void *reg, 
+z80_status z80_incByte(z80_t *z80, mem_t *mem, uint8_t *reg, 
                        uint32_t flag) {
   if (z80 == NULL || mem == NULL || reg == NULL) {
     return z80_bad_param;
@@ -129,7 +129,7 @@ z80_status z80_incByte(z80_t *z80, mem_t *mem, void *reg,
   return z80_ok;
 }
 
-z80_status z80_decByte(z80_t *z80, mem_t *mem, void *reg, 
+z80_status z80_decByte(z80_t *z80, mem_t *mem, uint8_t *reg, 
                        uint32_t flag) {
   if (z80 == NULL || mem == NULL || reg == NULL) {
     return z80_bad_param;
@@ -477,8 +477,275 @@ z80_status z80_resetBit(z80_t *z80, mem_t *mem, uint8_t *data,
 }
 
 z80_status z80_setBit(z80_t *z80, mem_t *mem, uint8_t *data, 
-                       uint8_t bit) {
+                      uint8_t bit) {
   *data |= 1<<bit;
   z80->dt = 8;
+  return z80_ok;
+}
+
+z80_status z80_swapNibbles(z80_t *z80, mem_t *mem, uint8_t *reg, 
+                           uint32_t flag) {
+  if (z80 == NULL || mem == NULL) {
+    return z80_bad_param;
+  }
+  uint8_t srcData = 0;
+  if (flag & (z80_srcIsAddr | z80_dstIsAddr)) {
+    VALID_MEM_OP(mem_readByte(mem, *((uint16_t *)reg), &srcData));
+    srcData = ((srcData & 0xF0) >> 4) | ((srcData & 0x0F) << 4);
+    VALID_MEM_OP(mem_writeByte(mem, *((uint16_t *)reg), srcData));
+    z80->dt = 16;
+  } else {
+    srcData = *reg;
+    srcData = ((srcData & 0xF0) >> 4) | ((srcData & 0x0F) << 4);
+    *reg = srcData;
+    z80->dt = 8;
+  }
+
+  if (srcData == 0) {
+    z80->f = ZERO_FLAG;
+  }
+  return z80_ok;
+}
+
+z80_status z80_rlc(z80_t *z80, mem_t *mem, uint8_t *reg,
+                   uint32_t flag) {
+  if (z80 == NULL || mem == NULL || reg == NULL) {
+    return z80_bad_param;
+  }
+  uint8_t srcData = 0;
+  if (flag & (z80_srcIsAddr | z80_dstIsAddr)) {
+    VALID_MEM_OP(mem_readByte(mem, *((uint16_t *)reg), &srcData));    
+  } else {
+    srcData = *reg;
+  }
+
+  uint8_t highBit = (srcData & 0xFF) >> 7;
+  z80->f = CARRY_FLAG * highBit;
+  srcData = (srcData << 1) | highBit;
+
+  if (srcData == 0) {
+    z80->f |= ZERO_FLAG;
+  }
+
+  if (flag & (z80_srcIsAddr | z80_dstIsAddr)) {
+    VALID_MEM_OP(mem_writeByte(mem, *((uint16_t *)reg), srcData));
+    z80->dt = 16;
+  } else {
+    z80->dt = 8;
+    *reg = srcData;
+  }
+  return z80_ok;
+}
+
+z80_status z80_rrc(z80_t *z80, mem_t *mem, uint8_t *reg,
+                    uint32_t flag) {
+  if (z80 == NULL || mem == NULL || reg == NULL) {
+    return z80_bad_param;
+  }
+  uint8_t srcData = 0;
+  if (flag & (z80_srcIsAddr | z80_dstIsAddr)) {
+    VALID_MEM_OP(mem_readByte(mem, *((uint16_t *)reg), &srcData));    
+  } else {
+    srcData = *reg;
+  }
+
+  uint8_t lowBit = (srcData & 0xFF) >> 7;
+  z80->f = CARRY_FLAG * lowBit;
+  srcData = (srcData >> 1) | lowBit << 7;
+
+  if (srcData == 0) {
+    z80->f |= ZERO_FLAG;
+  }
+
+  if (flag & (z80_srcIsAddr | z80_dstIsAddr)) {
+    VALID_MEM_OP(mem_writeByte(mem, *((uint16_t *)reg), srcData));
+    z80->dt = 16;
+  } else {
+    z80->dt = 8;
+    *reg = srcData;
+  }
+  return z80_ok;
+}
+
+z80_status z80_rl(z80_t *z80, mem_t *mem, uint8_t *reg,
+                  uint32_t flag) {
+  if (z80 == NULL || mem == NULL || reg == NULL) {
+    return z80_bad_param;
+  }
+  uint8_t srcData = 0;
+  if (flag & (z80_srcIsAddr | z80_dstIsAddr)) {
+    VALID_MEM_OP(mem_readByte(mem, *((uint16_t *)reg), &srcData));    
+  } else {
+    srcData = *reg;
+  }
+
+  uint8_t lowBit = z80->f & CARRY_FLAG ? 1 : 0;
+  uint8_t newCarry = (srcData & 0x80) >> 7;
+  z80->f = CARRY_FLAG * newCarry;
+  srcData = (srcData << 1) | lowBit;
+
+  if (srcData == 0) {
+    z80->f |= ZERO_FLAG;
+  }
+
+  if (flag & (z80_srcIsAddr | z80_dstIsAddr)) {
+    VALID_MEM_OP(mem_writeByte(mem, *((uint16_t *)reg), srcData));
+    z80->dt = 16;
+  } else {
+    z80->dt = 8;
+    *reg = srcData;
+  }
+  return z80_ok;
+}
+
+z80_status z80_rr(z80_t *z80, mem_t *mem, uint8_t *reg,
+                  uint32_t flag) {
+  if (z80 == NULL || mem == NULL || reg == NULL) {
+    return z80_bad_param;
+  }
+  uint8_t srcData = 0;
+  if (flag & (z80_srcIsAddr | z80_dstIsAddr)) {
+    VALID_MEM_OP(mem_readByte(mem, *((uint16_t *)reg), &srcData));    
+  } else {
+    srcData = *reg;
+  }
+
+  uint8_t highBit = z80->f & CARRY_FLAG ? 1 : 0;
+  uint8_t newCarry = srcData & 0x1;
+  z80->f = CARRY_FLAG * newCarry;
+  srcData = (highBit << 7) | (srcData >> 1);
+
+  if (srcData == 0) {
+    z80->f |= ZERO_FLAG;
+  }
+
+  if (flag & (z80_srcIsAddr | z80_dstIsAddr)) {
+    VALID_MEM_OP(mem_writeByte(mem, *((uint16_t *)reg), srcData));
+    z80->dt = 16;
+  } else {
+    z80->dt = 8;
+    *reg = srcData;
+  }
+  return z80_ok;
+}
+
+z80_status z80_sla(z80_t *z80, mem_t *mem, uint8_t *reg,
+                  uint32_t flag) {
+  if (z80 == NULL || mem == NULL || reg == NULL) {
+    return z80_bad_param;
+  }
+  uint8_t srcData = 0;
+  if (flag & (z80_srcIsAddr | z80_dstIsAddr)) {
+    VALID_MEM_OP(mem_readByte(mem, *((uint16_t *)reg), &srcData));    
+  } else {
+    srcData = *reg;
+  }
+
+  uint8_t newCarry = (srcData & 0x80) >> 7;
+  z80->f = CARRY_FLAG * newCarry;
+  srcData = srcData << 1;
+
+  if (srcData == 0) {
+    z80->f |= ZERO_FLAG;
+  }
+
+  if (flag & (z80_srcIsAddr | z80_dstIsAddr)) {
+    VALID_MEM_OP(mem_writeByte(mem, *((uint16_t *)reg), srcData));
+    z80->dt = 16;
+  } else {
+    z80->dt = 8;
+    *reg = srcData;
+  }
+  return z80_ok;
+}
+
+z80_status z80_sra(z80_t *z80, mem_t *mem, uint8_t *reg,
+                  uint32_t flag) {
+  if (z80 == NULL || mem == NULL || reg == NULL) {
+    return z80_bad_param;
+  }
+  uint8_t srcData = 0;
+  if (flag & (z80_srcIsAddr | z80_dstIsAddr)) {
+    VALID_MEM_OP(mem_readByte(mem, *((uint16_t *)reg), &srcData));    
+  } else {
+    srcData = *reg;
+  }
+
+  uint8_t newCarry = srcData & 0x01;
+  uint8_t highBit = srcData & 0x80;
+  z80->f = CARRY_FLAG * newCarry;
+  srcData = highBit | (srcData >> 1);
+
+  if (srcData == 0) {
+    z80->f |= ZERO_FLAG;
+  }
+
+  if (flag & (z80_srcIsAddr | z80_dstIsAddr)) {
+    VALID_MEM_OP(mem_writeByte(mem, *((uint16_t *)reg), srcData));
+    z80->dt = 16;
+  } else {
+    z80->dt = 8;
+    *reg = srcData;
+  }
+  return z80_ok;
+}
+
+z80_status z80_srl(z80_t *z80, mem_t *mem, uint8_t *reg,
+                  uint32_t flag) {
+  if (z80 == NULL || mem == NULL || reg == NULL) {
+    return z80_bad_param;
+  }
+  uint8_t srcData = 0;
+  if (flag & (z80_srcIsAddr | z80_dstIsAddr)) {
+    VALID_MEM_OP(mem_readByte(mem, *((uint16_t *)reg), &srcData));    
+  } else {
+    srcData = *reg;
+  }
+
+  uint8_t newCarry = srcData & 0x01;
+  z80->f = CARRY_FLAG * newCarry;
+  srcData = srcData >> 1;
+
+  if (srcData == 0) {
+    z80->f |= ZERO_FLAG;
+  }
+
+  if (flag & (z80_srcIsAddr | z80_dstIsAddr)) {
+    VALID_MEM_OP(mem_writeByte(mem, *((uint16_t *)reg), srcData));
+    z80->dt = 16;
+  } else {
+    z80->dt = 8;
+    *reg = srcData;
+  }
+  return z80_ok;
+}
+
+z80_status z80_call(z80_t *z80, mem_t *mem, uint8_t condition,
+                    uint16_t address) {
+  if (z80 == NULL || mem == NULL) {
+    return z80_bad_param;
+  }
+
+  if (condition) {
+    z80_push(z80, mem, z80->pc);
+    z80->pc = address;
+    z80->dt = 24;
+  } else {
+    z80->dt = 12;
+  }
+  return z80_ok;
+}
+
+z80_status z80_ret(z80_t *z80, mem_t *mem, uint8_t condition) {
+  if (z80 == NULL || mem == NULL) {
+    return z80_bad_param;
+  }
+
+  if (condition) {
+    z80->dt = 20;
+    z80_pop(z80, mem, &(z80->pc));
+  } else {
+    z80->dt = 8;
+  }
   return z80_ok;
 }

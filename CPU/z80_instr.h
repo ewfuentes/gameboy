@@ -37,7 +37,7 @@ typedef enum {
     zINC_c,
     zDEC_c,
     zLD_c_d8,
-    zRCCA,
+    zRRCA,
     zSTOP,              //0x10
     zLD_de_d16,
     zLD_DE_a,
@@ -536,25 +536,27 @@ z80_status z80_nop(z80_t *z80, mem_t *mem);
 // 0x01, 0x11, 0x21, 0x31
 z80_status z80_loadShort(z80_t *z80, mem_t *mem, uint16_t *reg);
 
-z80_status z80_mov(z80_t *z80, mem_t *mem, uint8_t *dst, uint8_t src);
+z80_status z80_mov(z80_t *z80, mem_t *mem, uint8_t *dst,
+                   uint8_t src);
 
-z80_status z80_movGen(z80_t *z80, mem_t *mem, void *dst, void *src,
+z80_status z80_movGen(z80_t *z80, mem_t *mem, uint8_t *dst, uint8_t *src,
                       z80_flags flags);
 
 z80_status z80_incShort(z80_t *z80, mem_t *mem, uint16_t *reg);
+
 z80_status z80_decShort(z80_t *z80, mem_t *mem, uint16_t *reg);
 
-z80_status z80_incByte(z80_t *z80, mem_t *mem, void *reg, 
+z80_status z80_incByte(z80_t *z80, mem_t *mem, uint8_t *reg, 
                        uint32_t flag);
 
-z80_status z80_decByte(z80_t *z80, mem_t *mem, void *reg, 
+z80_status z80_decByte(z80_t *z80, mem_t *mem, uint8_t *reg, 
                        uint32_t flag);
 
 z80_status z80_addShort(z80_t *z80, mem_t *mem, uint16_t *dst,
                         uint16_t src);
 
 z80_status z80_jp(z80_t *z80, mem_t *mem, uint8_t numAddrBytes, 
-       uint8_t condition);
+                  uint8_t condition);
 
 z80_status z80_addByte(z80_t *z80, mem_t *mem, uint8_t *dst, 
                        uint8_t *src, uint32_t flag);
@@ -578,12 +580,42 @@ z80_status z80_pop(z80_t *z80, mem_t *mem, uint16_t *reg);
 
 z80_status z80_push(z80_t *z80, mem_t *mem, uint16_t reg);
 
-z80_status z80_testBit(z80_t *z80, mem_t *mem, uint8_t data, uint8_t bit);
+z80_status z80_testBit(z80_t *z80, mem_t *mem, uint8_t data, 
+                       uint8_t bit);
 
 z80_status z80_resetBit(z80_t *z80, mem_t *mem, uint8_t *data, 
-                       uint8_t bit);
+                        uint8_t bit);
 
 z80_status z80_setBit(z80_t *z80, mem_t *mem, uint8_t *data, 
-                       uint8_t bit);
+                      uint8_t bit);
+
+z80_status z80_swapNibbles(z80_t *z80, mem_t *mem, uint8_t *reg, 
+                           uint32_t flag);
+
+z80_status z80_rlc(z80_t *z80, mem_t *mem, uint8_t *reg,
+                   uint32_t flag);
+
+z80_status z80_rrc(z80_t *z80, mem_t *mem, uint8_t *reg,
+                    uint32_t flag);
+
+z80_status z80_rl(z80_t *z80, mem_t *mem, uint8_t *reg,
+                  uint32_t flag);
+
+z80_status z80_rr(z80_t *z80, mem_t *mem, uint8_t *reg,
+                  uint32_t flag);
+
+z80_status z80_sla(z80_t *z80, mem_t *mem, uint8_t *reg,
+                  uint32_t flag);
+
+z80_status z80_sra(z80_t *z80, mem_t *mem, uint8_t *reg,
+                  uint32_t flag);
+
+z80_status z80_srl(z80_t *z80, mem_t *mem, uint8_t *reg,
+                  uint32_t flag);
+
+z80_status z80_call(z80_t *z80, mem_t *mem, uint8_t condition,
+                    uint16_t address);
+
+z80_status z80_ret(z80_t *z80, mem_t *mem, uint8_t condition);
 
 #endif
