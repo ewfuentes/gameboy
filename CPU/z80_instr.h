@@ -3,13 +3,13 @@
 
 #include "cpu/z80.h"
 
-typedef enum {
+typedef enum z80_status{
     z80_bad_param = -2,
     z80_fail,
     z80_ok
 } z80_status;
 
-typedef enum {
+typedef enum z80_flags{
     z80_dstIsAddr = 1 << 0,
     z80_srcIsAddr = 1 << 1,
     z80_dstInc = 1 << 2,
@@ -21,7 +21,7 @@ typedef enum {
     z80_withCarry = 1 << 8
 } z80_flags;
 
-typedef enum {
+typedef enum z80_instr{
     zNOP,               //0x00
     zLD_bc_d16,
     zLD_BC_a,
@@ -269,7 +269,7 @@ typedef enum {
     zRST_38
 } z80_instr;
 
-typedef enum {
+typedef enum z80_extInstr{
     zRLC_b,             //0x00
     zRLC_c,
     zRLC_d,

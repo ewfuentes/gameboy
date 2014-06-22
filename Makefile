@@ -17,9 +17,9 @@ OBJ = $(addprefix $(OBJDIR)/,$(notdir $(SRC:.c=.o)))
 SRCPATH = $(sort $(dir $(SRC)))
 VPATH = $(SRCPATH)
 
-CFLAGS = -c -g3
+CFLAGS = -c -g -O0
 
-LDFLAGS = -g3
+LDFLAGS = -g
 all: makedir $(OBJ) $(PROJ_NAME)
 
 $(OBJDIR)/%.o: %.c Makefile

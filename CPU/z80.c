@@ -904,7 +904,7 @@ int8_t z80_step(z80_t *z80, mem_t *mem) {
       break;
 
     case zDEC_b: // 0x05
-      z80_decByte(state, &(z80->c), 0);
+      z80_decByte(state, &(z80->b), 0);
       break;
 
     case zLD_b_d8: // 0x06
@@ -949,6 +949,7 @@ int8_t z80_step(z80_t *z80, mem_t *mem) {
     case zLD_c_d8: // 0x0E
       z80_movGen(state, &(z80->c), (uint8_t *)&(z80->pc), 
                  z80_srcIsAddr | z80_srcInc);
+      z80->pc++;
       break;
 
     case zRRCA: // 0x0F
@@ -962,7 +963,7 @@ int8_t z80_step(z80_t *z80, mem_t *mem) {
 
     case zLD_DE_a: // 0x12
       z80_movGen(state, (uint8_t *)&(z80->de), &(z80->a),
-                 z80_srcIsAddr);
+                 z80_dstIsAddr);
       break;
 
     case zINC_de: // 0x13
@@ -980,6 +981,7 @@ int8_t z80_step(z80_t *z80, mem_t *mem) {
     case zLD_d_d8: // 0x16
       z80_movGen(state, &(z80->d), (uint8_t *)&(z80->pc), 
                  z80_srcIsAddr | z80_srcInc);
+      z80->pc++;
       break;
 
     case zRLA: // 0x17
@@ -1016,6 +1018,7 @@ int8_t z80_step(z80_t *z80, mem_t *mem) {
     case zLD_e_d8: // 0x1E
       z80_movGen(state, &(z80->e), (uint8_t *)&(z80->pc), 
                  z80_srcIsAddr | z80_srcInc);
+      z80->pc++;
       break;
 
     case zRRA: // 0x1F
@@ -1034,7 +1037,7 @@ int8_t z80_step(z80_t *z80, mem_t *mem) {
 
     case zLD_HLI_a: // 0x22
       z80_movGen(state, (uint8_t *)&(z80->hl), &(z80->a), 
-                z80_srcIsAddr | z80_srcInc);
+                z80_dstIsAddr | z80_dstInc);
       break;
 
     case zINC_hl: // 0x23
@@ -1082,6 +1085,7 @@ int8_t z80_step(z80_t *z80, mem_t *mem) {
     case zLD_l_d8: // 0x2E
       z80_movGen(state, &(z80->l), (uint8_t *)&(z80->pc), 
                  z80_srcIsAddr | z80_srcInc);
+
       break;
 
     case zCPL: // 0x2F
@@ -1702,7 +1706,7 @@ int8_t z80_step(z80_t *z80, mem_t *mem) {
       z80_jp(state, 2, !(z80->f & ZERO_FLAG));
       break;
 
-    case zJP_a16: // 0xC2
+    case zJP_a16: // 0xC3
       z80_jp(state, 2, 1);
       break;
 
@@ -1825,7 +1829,9 @@ int8_t z80_step(z80_t *z80, mem_t *mem) {
       break;
 
     case zLDH_a8_a: // 0xE0
-      z80_movGen(state, (uint8_t *)&(z80->pc), &(z80->a), z80_dstPage0);
+      z80_movGen(state, (uint8_t *)&(z80->pc), &(z80->a),
+                 z80_dstPage0);
+      z80->pc++;
       break;
 
     case zPOP_hl: // 0xE1
@@ -1906,7 +1912,7 @@ int8_t z80_step(z80_t *z80, mem_t *mem) {
       z80->dt = 16;
       break;
 
-    case zLD_hl_sp_r8:
+    case zLD_hl_sp_r8: // 0xF8
       VALID_MEM_OP(mem_readByte(mem, z80->pc++, &tempB));
       z80->hl = z80->sp + (int8_t) tempB;
       z80->dt = 12;

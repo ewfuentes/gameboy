@@ -40,6 +40,7 @@ int8_t mem_readByte(mem_t *mem, uint16_t location, uint8_t *data) {
         *data = mem->bios[location];
         return 0;
       }
+      while(1);
       break;
     
     case 0x4000:

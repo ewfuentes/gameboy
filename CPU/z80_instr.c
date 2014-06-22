@@ -51,7 +51,7 @@ z80_status z80_movGen(z80_t *z80, mem_t *mem, uint8_t *dst,
     VALID_MEM_OP(mem_writeByte(mem, 0xFF00 | (uint8_t) dst,
                 srcData));
   } else if (flags & z80_dstIsAddr) {
-    VALID_MEM_OP(mem_writeByte(mem, (uint16_t) dst, srcData));
+    VALID_MEM_OP(mem_writeByte(mem, *((uint16_t *)dst), srcData));
   } else {
     //Since the destination isn't a page zero location or general
     //memory location, it must be a pointer to a register
@@ -59,6 +59,7 @@ z80_status z80_movGen(z80_t *z80, mem_t *mem, uint8_t *dst,
   }
 
   z80->dt = 4;
+  
   if (flags & (z80_dstIsAddr | z80_srcIsAddr)) {
     z80->dt = 8;
   }
@@ -67,19 +68,19 @@ z80_status z80_movGen(z80_t *z80, mem_t *mem, uint8_t *dst,
   }
 
   if (flags & z80_dstInc) {
-    (*((uint16_t *)dst))++;
+    *((uint16_t *)dst) += 1;
   }
 
   if (flags & z80_dstDec) {
-    (*((uint16_t *)dst))--;
+    *((uint16_t *)dst) -= 1;
   }
 
   if (flags & z80_srcInc) {
-    (*((uint16_t *)src))++;
+    *((uint16_t *)src) += 1;
   }
 
   if (flags & z80_srcDec) {
-    (*((uint16_t *)src))--;
+    *((uint16_t *)src) -= 1;
   }
   return z80_ok;
 }

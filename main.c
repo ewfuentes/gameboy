@@ -18,10 +18,12 @@ void cleanup() {
 }
 
 int main(void) {
+    char str[16];
     init();
     int8_t result = 0;
     while (result >= 0) {
         result = z80_step(&z80, &mem);
+        // scanf("%s", str);
     }
     
     cleanup();
